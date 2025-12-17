@@ -1,0 +1,9 @@
+# Ignore environment files containing credentials
+.env
+.env.*
+# macOS
+.DS_Store
+# Node/NPM typical ignores (if present)
+node_modules/
+# Entities
+/n8n-entities/
