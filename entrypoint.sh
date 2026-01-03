@@ -1,17 +1,5 @@
 #!/bin/sh
 
-# Start Tailscale if auth key is provided
-if [ -n "${TAILSCALE_AUTH_KEY:-}" ]; then
-  echo "Starting Tailscale..."
-  mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale
-  tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/var/run/tailscale/tailscaled.sock &
-  sleep 2
-  tailscale up --authkey="${TAILSCALE_AUTH_KEY}" --hostname="${TAILSCALE_HOSTNAME:-n8n-heroku}" --accept-routes
-  echo "✓ Tailscale connected"
-else
-  echo "TAILSCALE_AUTH_KEY not set, skipping Tailscale setup"
-fi
-
 # check if port variable is set or go with default
 if [ -z ${PORT+x} ]; then echo "PORT variable not defined, leaving N8N to default port."; else export N8N_PORT="$PORT"; echo "N8N will start on '$PORT'"; fi
 
