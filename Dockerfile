@@ -2,8 +2,8 @@ FROM n8nio/n8n:latest
 
 USER root
 
-# Install curl dan dependencies untuk Tailscale
-RUN apt-get update && apt-get install -y curl && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Install curl dan dependencies untuk Tailscale (Alpine)
+RUN apk add --no-cache curl ca-certificates
 
 # Install Tailscale - download pre-built binary
 RUN ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') && \
