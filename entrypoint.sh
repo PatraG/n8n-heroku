@@ -35,7 +35,7 @@ if [ -n "$TS_AUTHKEY" ]; then
       --listen-port "$TS_FORWARD_LISTEN_PORT" \
       --target-host "$TS_FORWARD_TARGET_HOST" \
       --target-port "$TS_FORWARD_TARGET_PORT" \
-      >/tmp/ts-forward.log 2>&1 &
+      2>&1 &
   fi
 
   if [ "${TAILSCALE_SERVE:-true}" = "true" ]; then
