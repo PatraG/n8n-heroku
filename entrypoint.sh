@@ -17,7 +17,9 @@ if [ -n "$TS_AUTHKEY" ]; then
   /usr/local/bin/tailscale --socket=/tmp/tailscaled.sock up \
     --authkey="$TS_AUTHKEY" \
     --hostname="${TAILSCALE_HOSTNAME:-n8n-modadigi}" \
-    --accept-dns=false || echo "WARNING: tailscale up failed"
+    --accept-dns=false \
+    ${TAILSCALE_ADVERTISE_TAGS:+--advertise-tags="$TAILSCALE_ADVERTISE_TAGS"} \
+    ${TAILSCALE_EXTRA_ARGS:-} || echo "WARNING: tailscale up failed"
 
   if [ "${TAILSCALE_SERVE:-true}" = "true" ]; then
     N8N_LISTEN_PORT="${N8N_PORT:-5678}"
