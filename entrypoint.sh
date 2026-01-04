@@ -15,11 +15,6 @@ if [ -n "$TS_AUTHKEY" ]; then
   TS_FORWARD_TARGET_HOST="${TAILSCALE_FORWARD_TARGET_HOST:-}"
   TS_FORWARD_TARGET_PORT="${TAILSCALE_FORWARD_TARGET_PORT:-5432}"
 
-  TS_SOCKS5_FLAG=""
-  if [ -n "$TS_FORWARD_TARGET_HOST" ]; then
-    TS_SOCKS5_FLAG="--socks5-server=${TS_SOCKS5_HOST}:${TS_SOCKS5_PORT}"
-  fi
-
   i=0
   while [ ! -S /tmp/tailscaled.sock ] && [ $i -lt 50 ]; do
     i=$((i+1))
@@ -30,17 +25,14 @@ if [ -n "$TS_AUTHKEY" ]; then
     --authkey="$TS_AUTHKEY" \
     --hostname="${TAILSCALE_HOSTNAME:-n8n-modadigi}" \
     --accept-dns=false \
-    ${TS_SOCKS5_FLAG:+$TS_SOCKS5_FLAG} \
     ${TAILSCALE_ADVERTISE_TAGS:+--advertise-tags="$TAILSCALE_ADVERTISE_TAGS"} \
     ${TAILSCALE_EXTRA_ARGS:-} || echo "WARNING: tailscale up failed"
 
   if [ -n "$TS_FORWARD_TARGET_HOST" ]; then
-    echo "Starting Tailscale TCP forwarder: ${TS_FORWARD_LISTEN_HOST}:${TS_FORWARD_LISTEN_PORT} -> ${TS_FORWARD_TARGET_HOST}:${TS_FORWARD_TARGET_PORT} (via SOCKS5 ${TS_SOCKS5_HOST}:${TS_SOCKS5_PORT})"
+    echo "Starting Tailscale TCP forwarder: ${TS_FORWARD_LISTEN_HOST}:${TS_FORWARD_LISTEN_PORT} -> ${TS_FORWARD_TARGET_HOST}:${TS_FORWARD_TARGET_PORT} (via tailscale nc)"
     node /usr/local/bin/ts-socks5-tcp-forward.js \
       --listen-host "$TS_FORWARD_LISTEN_HOST" \
       --listen-port "$TS_FORWARD_LISTEN_PORT" \
-      --socks-host "$TS_SOCKS5_HOST" \
-      --socks-port "$TS_SOCKS5_PORT" \
       --target-host "$TS_FORWARD_TARGET_HOST" \
       --target-port "$TS_FORWARD_TARGET_PORT" \
       >/tmp/ts-forward.log 2>&1 &
