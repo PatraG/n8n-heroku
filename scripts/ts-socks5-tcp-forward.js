@@ -1,19 +1,4 @@
 #!/usr/bin/env node
-/*
-  Minimal TCP forwarder that connects to a target host:port via a local SOCKS5 server.
-  Intended for environments where Tailscale runs in userspace networking (no kernel TUN),
-  so apps can reach tailnet services by connecting to localhost.
-
-  Usage:
-    node ts-socks5-tcp-forward.js \
-      --listen-host 127.0.0.1 --listen-port 15432 \
-      --socks-host 127.0.0.1 --socks-port 1055 \
-      --target-host 100.87.30.117 --target-port 5432
-*/
-
-const net = require('net');
-
-#!/usr/bin/env node
 
 const net = require('net');
 const { spawn } = require('child_process');
@@ -123,4 +108,3 @@ main().catch((err) => {
   console.error(`[forwarder] fatal: ${err.stack || err.message}`);
   process.exit(1);
 });
-    };
