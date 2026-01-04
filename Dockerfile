@@ -10,11 +10,11 @@ RUN curl -fsSL "https://pkgs.tailscale.com/stable/tailscale_${TS_VERSION}_amd64.
 FROM n8nio/n8n:latest
 ARG TS_VERSION
 
+USER root
+
 COPY --from=tailscale /tmp/tailscale_${TS_VERSION}_amd64/tailscale /usr/local/bin/tailscale
 COPY --from=tailscale /tmp/tailscale_${TS_VERSION}_amd64/tailscaled /usr/local/bin/tailscaled
 RUN chmod +x /usr/local/bin/tailscale /usr/local/bin/tailscaled
-
-USER root
 
 WORKDIR /home/node/packages/cli
 ENTRYPOINT []
