@@ -16,6 +16,9 @@ COPY --from=tailscale /tmp/tailscale_${TS_VERSION}_amd64/tailscale /usr/local/bi
 COPY --from=tailscale /tmp/tailscale_${TS_VERSION}_amd64/tailscaled /usr/local/bin/tailscaled
 RUN chmod +x /usr/local/bin/tailscale /usr/local/bin/tailscaled
 
+COPY ./scripts/ts-socks5-tcp-forward.js /usr/local/bin/ts-socks5-tcp-forward.js
+RUN chmod +x /usr/local/bin/ts-socks5-tcp-forward.js
+
 WORKDIR /home/node/packages/cli
 ENTRYPOINT []
 
