@@ -21,7 +21,7 @@ if [ -n "$TS_AUTHKEY" ]; then
 
   if [ "${TAILSCALE_SERVE:-true}" = "true" ]; then
     N8N_LISTEN_PORT="${N8N_PORT:-5678}"
-    /usr/local/bin/tailscale --socket=/tmp/tailscaled.sock serve tcp 5678 "localhost:${N8N_LISTEN_PORT}" || true
+    /usr/local/bin/tailscale --socket=/tmp/tailscaled.sock serve --bg --tcp 5678 "${N8N_LISTEN_PORT}" || true
   fi
 else
   echo "TAILSCALE_AUTHKEY/TAILSCALE_AUTH_KEY not set; skipping Tailscale"
