@@ -3,6 +3,30 @@
 # check if port variable is set or go with default
 if [ -z ${PORT+x} ]; then echo "PORT variable not defined, leaving N8N to default port."; else export N8N_PORT="$PORT"; echo "N8N will start on '$PORT'"; fi
 
+TS_AUTHKEY="${TAILSCALE_AUTHKEY:-${TAILSCALE_AUTH_KEY:-}}"
+if [ -n "$TS_AUTHKEY" ]; then
+  echo "Starting Tailscale..."
+  /usr/local/bin/tailscaled --tun=userspace-networking --state=mem: --socket=/tmp/tailscaled.sock &
+
+  i=0
+  while [ ! -S /tmp/tailscaled.sock ] && [ $i -lt 50 ]; do
+    i=$((i+1))
+    sleep 0.2
+  done
+
+  /usr/local/bin/tailscale --socket=/tmp/tailscaled.sock up \
+    --authkey="$TS_AUTHKEY" \
+    --hostname="${TAILSCALE_HOSTNAME:-n8n-modadigi}" \
+    --accept-dns=false || echo "WARNING: tailscale up failed"
+
+  if [ "${TAILSCALE_SERVE:-true}" = "true" ]; then
+    N8N_LISTEN_PORT="${N8N_PORT:-5678}"
+    /usr/local/bin/tailscale --socket=/tmp/tailscaled.sock serve tcp 5678 "localhost:${N8N_LISTEN_PORT}" || true
+  fi
+else
+  echo "TAILSCALE_AUTHKEY/TAILSCALE_AUTH_KEY not set; skipping Tailscale"
+fi
+
 # regex function
 parse_url() {
   eval $(echo "$1" | sed -e "s#^\(\(.*\)://\)\?\(\([^:@]*\)\(:\(.*\)\)\?@\)\?\([^/?]*\)\(/\(.*\)\)\?#${PREFIX:-URL_}SCHEME='\2' ${PREFIX:-URL_}USER='\4' ${PREFIX:-URL_}PASSWORD='\6' ${PREFIX:-URL_}HOSTPORT='\7' ${PREFIX:-URL_}DATABASE='\9'#")
